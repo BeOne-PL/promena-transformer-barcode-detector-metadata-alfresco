@@ -4,7 +4,6 @@ import mu.KotlinLogging
 import org.alfresco.service.ServiceRegistry
 import org.alfresco.service.cmr.repository.ChildAssociationRef
 import org.alfresco.service.cmr.repository.NodeRef
-import org.alfresco.service.namespace.NamespaceService.CONTENT_MODEL_1_0_URI
 import org.alfresco.service.namespace.QName
 import org.alfresco.service.namespace.QName.createQName
 import pl.beone.promena.alfresco.module.core.contract.transformation.PromenaTransformationMetadataSaver
@@ -17,6 +16,7 @@ import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationm
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorModel.PROPERTY_Y
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorModel.TYPE_BARCODE
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorModel.TYPE_VERTEX
+import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorNamespace.PROMENA_BARCODE_DETECTOR_MODEL_1_0_URI
 import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadata
 import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadata.Barcode
 import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadata.Barcode.Vertex
@@ -34,7 +34,7 @@ class BarcodeDetectorPromenaTransformationMetadataSaver(
     }
 
     override fun save(
-        sourceNodeRef: NodeRef,
+        nodeRefs: List<NodeRef>,
         transformation: Transformation,
         transformedDataDescriptor: TransformedDataDescriptor,
         transformedNodeRefs: List<NodeRef>
@@ -78,7 +78,7 @@ class BarcodeDetectorPromenaTransformationMetadataSaver(
         return serviceRegistry.nodeService.createNode(
             parentNodeRef,
             ASSOCIATION_BARCODES,
-            createQName(CONTENT_MODEL_1_0_URI, createName(text, format, page)),
+            createQName(PROMENA_BARCODE_DETECTOR_MODEL_1_0_URI, createName(text, format, page)),
             TYPE_BARCODE,
             mapOf<QName, Serializable?>(
                 PROPERTY_TEXT to text,
@@ -95,7 +95,7 @@ class BarcodeDetectorPromenaTransformationMetadataSaver(
         serviceRegistry.nodeService.createNode(
             parentNodeRef,
             ASSOCIATION_CONTOUR_VERTICES_ON_PAGE,
-            createQName(CONTENT_MODEL_1_0_URI, createName(x, y)),
+            createQName(PROMENA_BARCODE_DETECTOR_MODEL_1_0_URI, createName(x, y)),
             TYPE_VERTEX,
             mapOf(
                 PROPERTY_X to x,

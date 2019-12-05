@@ -49,14 +49,14 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
     @Test
     fun save_theSameNumberOfTransformedDataDescriptorsAndTransformedDataRefsElements() {
         val integrationTestsFolder = createOrGetIntegrationTestsFolder()
-        val sourceNodeRef = integrationTestsFolder.createNode()
+        val nodeRefs = listOf(integrationTestsFolder.createNode(), integrationTestsFolder.createNode())
         val transformedNodeRef = integrationTestsFolder.createNode()
         val transformedNodeRef2 = integrationTestsFolder.createNode()
         val transformedNodeRef3 = integrationTestsFolder.createNode()
 
         BarcodeDetectorPromenaTransformationMetadataSaver(serviceRegistry)
             .save(
-                sourceNodeRef,
+                nodeRefs,
                 mockk(),
                 singleTransformedDataDescriptor(mockk(), metadata) +
                         singleTransformedDataDescriptor(mockk(), emptyMetadata()) +
@@ -64,7 +64,7 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
                 listOf(transformedNodeRef, transformedNodeRef2, transformedNodeRef3)
             )
 
-        validateNoMetadataAspectAndBarcodeAssociations(sourceNodeRef)
+        nodeRefs.forEach(::validateNoMetadataAspectAndBarcodeAssociations)
         with(transformedNodeRef) {
             getAspects() shouldContain ASPECT_METADATA
             with(getBarcodeAssociationNodeRefs().sortByDbId()) {
@@ -87,12 +87,12 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
     @Test
     fun save_differentNumberOfTransformedDataDescriptorsAndTransformedDataRefsElements() {
         val integrationTestsFolder = createOrGetIntegrationTestsFolder()
-        val sourceNodeRef = integrationTestsFolder.createNode()
+        val nodeRefs = listOf(integrationTestsFolder.createNode(), integrationTestsFolder.createNode())
         val transformedNodeRef = integrationTestsFolder.createNode()
 
         BarcodeDetectorPromenaTransformationMetadataSaver(serviceRegistry)
             .save(
-                sourceNodeRef,
+                nodeRefs,
                 mockk(),
                 singleTransformedDataDescriptor(mockk(), metadata) +
                         singleTransformedDataDescriptor(mockk(), emptyMetadata()) +
@@ -100,7 +100,7 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
                 listOf(transformedNodeRef)
             )
 
-        validateNoMetadataAspectAndBarcodeAssociations(sourceNodeRef)
+        nodeRefs.forEach(::validateNoMetadataAspectAndBarcodeAssociations)
         with(transformedNodeRef) {
             getAspects() shouldContain ASPECT_METADATA
             with(getBarcodeAssociationNodeRefs().sortByDbId()) {
@@ -115,37 +115,37 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
     @Test
     fun save_noBarcodeDetectorMetadataInTransformedData() {
         val integrationTestsFolder = createOrGetIntegrationTestsFolder()
-        val sourceNodeRef = integrationTestsFolder.createNode()
+        val nodeRefs = listOf(integrationTestsFolder.createNode(), integrationTestsFolder.createNode())
         val transformedNodeRef = integrationTestsFolder.createNode()
 
         BarcodeDetectorPromenaTransformationMetadataSaver(serviceRegistry)
             .save(
-                sourceNodeRef,
+                nodeRefs,
                 mockk(),
                 singleTransformedDataDescriptor(mockk(), emptyMetadata()) +
                         singleTransformedDataDescriptor(mockk(), emptyMetadata()),
                 listOf(transformedNodeRef)
             )
 
-        validateNoMetadataAspectAndBarcodeAssociations(sourceNodeRef)
+        nodeRefs.forEach(::validateNoMetadataAspectAndBarcodeAssociations)
         validateNoMetadataAspectAndBarcodeAssociations(transformedNodeRef)
     }
 
     @Test
     fun save_noTransformedNodeRefs() {
         val integrationTestsFolder = createOrGetIntegrationTestsFolder()
-        val sourceNodeRef = integrationTestsFolder.createNode()
+        val nodeRefs = listOf(integrationTestsFolder.createNode(), integrationTestsFolder.createNode())
 
         BarcodeDetectorPromenaTransformationMetadataSaver(serviceRegistry)
             .save(
-                sourceNodeRef,
+                nodeRefs,
                 mockk(),
                 singleTransformedDataDescriptor(mockk(), metadata) +
                         singleTransformedDataDescriptor(mockk(), emptyMetadata()),
                 emptyList()
             )
 
-        validateNoMetadataAspectAndBarcodeAssociations(sourceNodeRef)
+        nodeRefs.forEach(::validateNoMetadataAspectAndBarcodeAssociations)
     }
 
     private fun validateNoMetadataAspectAndBarcodeAssociations(nodeRef: NodeRef) {

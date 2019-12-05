@@ -45,7 +45,7 @@
                 <child-association name="promenaBarcodeDetector:contourVerticesOnPage">
                     <source>
                         <mandatory>true</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>promenaBarcodeDetector:vertex</class>
@@ -84,7 +84,7 @@
                 <child-association name="promenaBarcodeDetector:barcodes">
                     <source>
                         <mandatory>true</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>promenaBarcodeDetector:barcode</class>
