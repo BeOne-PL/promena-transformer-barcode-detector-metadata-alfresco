@@ -69,8 +69,8 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
             getAspects() shouldContain ASPECT_METADATA
             with(getBarcodeAssociationNodeRefs().sortByDbId()) {
                 this shouldHaveSize 2
-                validateMetadataBarcode(get(0))
-                validateMetadataBarcode2(get(1))
+                validateMetadataBarcode(this[0])
+                validateMetadataBarcode2(this[1])
             }
         }
         validateNoMetadataAspectAndBarcodeAssociations(transformedNodeRef2)
@@ -79,7 +79,7 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
             with(getBarcodeAssociationNodeRefs()) {
                 this shouldHaveSize 1
 
-                validateMetadata2Barcode(get(0))
+                validateMetadata2Barcode(this[0])
             }
         }
     }
@@ -105,9 +105,9 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
             getAspects() shouldContain ASPECT_METADATA
             with(getBarcodeAssociationNodeRefs().sortByDbId()) {
                 this shouldHaveSize 3
-                validateMetadataBarcode(get(0))
-                validateMetadataBarcode2(get(1))
-                validateMetadata2Barcode(get(2))
+                validateMetadataBarcode(this[0])
+                validateMetadataBarcode2(this[1])
+                validateMetadata2Barcode(this[2])
             }
         }
     }
@@ -164,13 +164,13 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
             )
             with(getContourVerticesOnPageAssociationNodeRefs()) {
                 this shouldHaveSize 2
-                with(get(0)) {
+                with(this[0]) {
                     getProperties() shouldContainAll mapOf(
                         PROPERTY_X to metadataBarcode.getContourVerticesOnPage()[0].getX(),
                         PROPERTY_Y to metadataBarcode.getContourVerticesOnPage()[0].getY()
                     )
                 }
-                with(get(1)) {
+                with(this[1]) {
                     getProperties() shouldContainAll mapOf(
                         PROPERTY_X to metadataBarcode.getContourVerticesOnPage()[1].getX(),
                         PROPERTY_Y to metadataBarcode.getContourVerticesOnPage()[1].getY()
