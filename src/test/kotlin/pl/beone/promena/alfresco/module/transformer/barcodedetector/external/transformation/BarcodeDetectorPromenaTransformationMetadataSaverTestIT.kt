@@ -26,7 +26,10 @@ import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationm
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorModel.PROPERTY_TEXT
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorModel.PROPERTY_X
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorModel.PROPERTY_Y
-import pl.beone.promena.transformer.barcodedetector.metadata.*
+import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadataBuilder
+import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadataBuilder.BarcodeBuilder
+import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadataBuilder.BarcodeBuilder.VertexBuilder
+import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadataGetter.Barcode
 import pl.beone.promena.transformer.contract.data.plus
 import pl.beone.promena.transformer.contract.data.singleTransformedDataDescriptor
 import pl.beone.promena.transformer.internal.model.metadata.emptyMetadata
@@ -37,13 +40,28 @@ import java.time.LocalDateTime
 class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfrescoIT() {
 
     companion object {
-        private val metadataBarcode =
-            barcode() addText "0123456789" addFormat "QR Code" addPage 1 addContourVertexOnPage (10 to 11) addContourVertexOnPage (20 to 21)
-        private val metadataBarcode2 = barcode()
-        private val metadata = barcodeDetectorMetadata() addBarcode metadataBarcode addBarcode metadataBarcode2
+        private val metadataBarcode = BarcodeBuilder()
+            .text("0123456789")
+            .format("QR Code")
+            .page(1)
+            .contourVerticesOnPage(VertexBuilder(x = 10, y = 11).build())
+            .contourVerticesOnPage(VertexBuilder(x = 20, y = 21).build())
+            .build()
+        private val metadataBarcode2 = BarcodeBuilder()
+            .text("666")
+            .build()
+        private val metadata = BarcodeDetectorMetadataBuilder()
+            .barcode(metadataBarcode)
+            .barcode(metadataBarcode2)
+            .build()
 
-        private val metadata2Barcode = barcode() addText "01234565" addFormat "EAN-8"
-        private val metadata2 = barcodeDetectorMetadata() addBarcode metadata2Barcode
+        private val metadata2Barcode = BarcodeBuilder()
+            .text("01234565")
+            .format("EAN-8")
+            .build()
+        private val metadata2 = BarcodeDetectorMetadataBuilder()
+            .barcode(metadata2Barcode)
+            .build()
     }
 
     @Test
@@ -156,24 +174,26 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
     }
 
     private fun validateMetadataBarcode(nodeRef: NodeRef) {
+        val barcode = Barcode(metadataBarcode)
+
         with(nodeRef) {
             getProperties() shouldContainAll mapOf(
-                PROPERTY_TEXT to metadataBarcode.getText(),
-                PROPERTY_FORMAT to metadataBarcode.getFormat(),
-                PROPERTY_PAGE to metadataBarcode.getPage()
+                PROPERTY_TEXT to barcode.getText(),
+                PROPERTY_FORMAT to barcode.getFormat(),
+                PROPERTY_PAGE to barcode.getPage()
             )
             with(getContourVerticesOnPageAssociationNodeRefs()) {
                 this shouldHaveSize 2
                 with(this[0]) {
                     getProperties() shouldContainAll mapOf(
-                        PROPERTY_X to metadataBarcode.getContourVerticesOnPage()[0].getX(),
-                        PROPERTY_Y to metadataBarcode.getContourVerticesOnPage()[0].getY()
+                        PROPERTY_X to barcode.getContourVerticesOnPage()[0].getX(),
+                        PROPERTY_Y to barcode.getContourVerticesOnPage()[0].getY()
                     )
                 }
                 with(this[1]) {
                     getProperties() shouldContainAll mapOf(
-                        PROPERTY_X to metadataBarcode.getContourVerticesOnPage()[1].getX(),
-                        PROPERTY_Y to metadataBarcode.getContourVerticesOnPage()[1].getY()
+                        PROPERTY_X to barcode.getContourVerticesOnPage()[1].getX(),
+                        PROPERTY_Y to barcode.getContourVerticesOnPage()[1].getY()
                     )
                 }
             }
@@ -188,11 +208,13 @@ class BarcodeDetectorPromenaTransformationMetadataSaverTestIT : AbstractAlfresco
     }
 
     private fun validateMetadata2Barcode(nodeRef: NodeRef) {
+        val barcode = Barcode(metadata2Barcode)
+
         with(nodeRef) {
             with(getProperties()) {
                 this shouldContainAll mapOf(
-                    PROPERTY_TEXT to metadata2Barcode.getText(),
-                    PROPERTY_FORMAT to metadata2Barcode.getFormat()
+                    PROPERTY_TEXT to barcode.getText(),
+                    PROPERTY_FORMAT to barcode.getFormat()
                 )
                 this shouldNotContainKey PROPERTY_PAGE
             }

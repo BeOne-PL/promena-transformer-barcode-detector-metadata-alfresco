@@ -17,9 +17,9 @@ import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationm
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorModel.TYPE_BARCODE
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorModel.TYPE_VERTEX
 import pl.beone.promena.alfresco.module.transformer.barcodedetector.applicationmodel.model.PromenaBarcodeDetectorNamespace.PROMENA_BARCODE_DETECTOR_MODEL_1_0_URI
-import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadata
-import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadata.Barcode
-import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadata.Barcode.Vertex
+import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadataGetter
+import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadataGetter.Barcode
+import pl.beone.promena.transformer.barcodedetector.metadata.BarcodeDetectorMetadataGetter.Barcode.Vertex
 import pl.beone.promena.transformer.contract.data.TransformedDataDescriptor
 import pl.beone.promena.transformer.contract.model.Metadata
 import pl.beone.promena.transformer.contract.transformation.Transformation
@@ -59,21 +59,21 @@ class BarcodeDetectorPromenaTransformationMetadataSaver(
 
     private fun notContainAnyBarcodeDetectorMetadata(singleTransformedDataDescriptors: List<TransformedDataDescriptor.Single>): Boolean =
         singleTransformedDataDescriptors.asSequence()
-            .map { (_, metadata) -> ifExists { BarcodeDetectorMetadata(metadata).getBarcodes() } ?: false }
+            .map { (_, metadata) -> getIfExistsOrNull { BarcodeDetectorMetadataGetter(metadata).getBarcodes() } ?: false }
             .contains(true)
 
     private fun saveMetadata(nodeRef: NodeRef, metadata: Metadata) {
         try {
-            BarcodeDetectorMetadata(metadata).getBarcodes()
+            BarcodeDetectorMetadataGetter(metadata).getBarcodes()
                 .forEach { saveBarcode(nodeRef, it) }
         } catch (e: Exception) {
         }
     }
 
     private fun saveBarcode(parentNodeRef: NodeRef, barcode: Barcode): ChildAssociationRef? {
-        val text = ifExists { barcode.getText() }
-        val format = ifExists { barcode.getFormat() }
-        val page = ifExists { barcode.getPage() }
+        val text = getIfExistsOrNull { barcode.getText() }
+        val format = getIfExistsOrNull { barcode.getFormat() }
+        val page = getIfExistsOrNull { barcode.getPage() }
 
         return serviceRegistry.nodeService.createNode(
             parentNodeRef,
@@ -89,8 +89,8 @@ class BarcodeDetectorPromenaTransformationMetadataSaver(
     }
 
     private fun saveVertex(parentNodeRef: NodeRef, vertex: Vertex) {
-        val x = ifExists { vertex.getX() }
-        val y = ifExists { vertex.getY() }
+        val x = getIfExistsOrNull { vertex.getX() }
+        val y = getIfExistsOrNull { vertex.getY() }
 
         serviceRegistry.nodeService.createNode(
             parentNodeRef,
@@ -107,7 +107,7 @@ class BarcodeDetectorPromenaTransformationMetadataSaver(
     private fun createName(vararg elements: Any?): String =
         elements.joinToString(", ")
 
-    private fun <T> ifExists(toExecute: () -> T): T? =
+    private fun <T> getIfExistsOrNull(toExecute: () -> T): T? =
         try {
             toExecute()
         } catch (e: NoSuchElementException) {
