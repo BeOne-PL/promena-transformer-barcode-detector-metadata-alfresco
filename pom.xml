@@ -14,8 +14,6 @@
         <kotlin.version>1.3.50</kotlin.version>
         <java.version>11</java.version>
 
-        <alfresco-jvm-console.version>1.0.0</alfresco-jvm-console.version>
-
         <alfresco-promena-core.version>1.0.0</alfresco-promena-core.version>
         <barcode-detector-metadata.version>1.0.0</barcode-detector-metadata.version>
 
@@ -74,13 +72,6 @@
             <version>${barcode-detector-metadata.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>pl.skotar.alfresco.module.jvmconsole</groupId>
-            <artifactId>alfresco-jvm-console</artifactId>
-            <version>${alfresco-jvm-console.version}</version>
-            <type>amp</type>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>pl.beone.promena.alfresco.module</groupId>
             <artifactId>alfresco-promena-core</artifactId>
